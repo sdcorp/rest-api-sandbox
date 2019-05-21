@@ -1,4 +1,6 @@
 const path = require('path');
+const { validationResult } = require('express-validator/check');
+
 /*
   Catch Errors Handler
 
@@ -37,6 +39,39 @@ exports.dbValidationErrors = (err, req, res, next) => {
   dbError.status = 422;
   dbError.data = data;
   next(dbError);
+};
+
+/*
+  Express-validator wrapper handler
+
+  Short util handler if express validation failed
+*/
+exports.catchExpValidatorErrors = (
+  req,
+  status = 422,
+  msg = 'Validation failed'
+) => {
+  // validation params id
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const err = new Error(msg);
+    err.status = status;
+    err.data = errors.array();
+    throw err;
+  }
+};
+
+// Short util handler accept only JSON type of req
+exports.acceptOnlyJson = (
+  req,
+  status = 406,
+  msg = 'Accept only application/json'
+) => {
+  if (!req.is('application/json')) {
+    const err = new Error(msg);
+    err.status = status;
+    throw err;
+  }
 };
 
 /*

@@ -1,7 +1,10 @@
 const { validationResult } = require('express-validator/check');
 const TestModel = require('../models/Test');
+const {
+  catchExpValidatorErrors,
+  acceptOnlyJson,
+} = require('../handlers/errorHandlers');
 
-// TODO Make repeatable expressValidation flow a separate handler -> withExpressValidator(req, msg, status)
 // TODO Make check if exist also a separate handler (mb combine with Express Validator)
 
 exports.getData = async (req, res) => {
@@ -16,13 +19,7 @@ exports.getData = async (req, res) => {
 
 exports.getSingleDoc = async (req, res) => {
   // validation params id
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    const err = new Error('Validation failed!');
-    err.status = 422;
-    err.data = errors.array();
-    throw err;
-  }
+  catchExpValidatorErrors(req);
   const { id } = req.params;
   const doc = await TestModel.findById(id);
   // check if doc is not in DB.  we can do this in custom validator -> check('email').custom(cb)
@@ -35,21 +32,13 @@ exports.getSingleDoc = async (req, res) => {
 };
 
 exports.postData = async (req, res) => {
-  if (!req.is('application/json')) {
-    const err = new Error('Accept only application/json');
-    err.status = 406;
-    throw err;
-  }
+  // only json
+  acceptOnlyJson(req);
   // validation
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    const err = new Error('Validation failed!');
-    err.status = 422;
-    err.data = errors.array();
-    throw err;
-  }
+  catchExpValidatorErrors(req);
   const { email } = req.body;
-  // check if doc exist OR we can do this in custom validator -> check('email').custom(cb)
+  // TODO we can do this in custom validator -> check('email').custom(cb)
+  // check if doc exist OR
   const doc = await TestModel.findOne({ email });
   if (doc) {
     const err = new Error('Doc with this email already exists');
@@ -63,20 +52,10 @@ exports.postData = async (req, res) => {
 };
 
 exports.editSingleDoc = async (req, res) => {
-  // validate headers
-  if (!req.is('application/json')) {
-    const err = new Error('Accept only application/json');
-    err.status = 406;
-    throw err;
-  }
+  // only json headers
+  acceptOnlyJson(req);
   // validation params id
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    const err = new Error('Validation failed!');
-    err.status = 422;
-    err.data = errors.array();
-    throw err;
-  }
+  catchExpValidatorErrors(req);
   const { id } = req.params;
   const { email } = req.body;
   const doc = await TestModel.findById(id);
@@ -106,16 +85,11 @@ exports.editSingleDoc = async (req, res) => {
 
 exports.deleteSingleDoc = async (req, res) => {
   // validation params id
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    const err = new Error('Validation failed!');
-    err.status = 422;
-    err.data = errors.array();
-    throw err;
-  }
+  catchExpValidatorErrors(req);
   const { id } = req.params;
   const doc = await TestModel.findByIdAndDelete(id);
-  // check if doc is not in DB.  we can do this in custom validator -> check('email').custom(cb)
+  // TODO we can do this in custom validator -> check('email').custom(cb)
+  // check if doc is not in DB.
   if (!doc) {
     const err = new Error(`Doc with id [${id}] not found`);
     err.status = 404;
