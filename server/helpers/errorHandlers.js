@@ -25,7 +25,7 @@ exports.notFound = (req, res, next) => {
 /*
   MongoDB Validation Error Handler
 
-  Detect if there are mongodb validation errors
+  Detect if there are mongodb validation errors and show them in well formatted obj
 */
 
 exports.dbValidationErrors = (err, req, res, next) => {
@@ -41,17 +41,15 @@ exports.dbValidationErrors = (err, req, res, next) => {
   next(dbError);
 };
 
-/*
-  Express-validator wrapper handler
-
-  Short util handler if express validation failed
-*/
-exports.catchExpValidatorErrors = (
-  req,
-  status = 422,
-  msg = 'Validation failed'
-) => {
-  // validation params id
+/**
+ * Express-validator wrapper.
+ * @param {Object} req Request object
+ * @param { { msg:string, status:number } } options Settings object
+ * @returns {Error} Return custom Error if Express-Validation failed
+ */
+exports.catchExpValidatorErrors = (req, options = {}) => {
+  // default options
+  const { msg = 'Validation failed', status = 422 } = options;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const err = new Error(msg);
@@ -61,26 +59,15 @@ exports.catchExpValidatorErrors = (
   }
 };
 
-// Short util handler accept only JSON type of req
-exports.acceptOnlyJson = (
-  req,
-  status = 406,
-  msg = 'Accept only application/json'
-) => {
-  if (!req.is('application/json')) {
-    const err = new Error(msg);
-    err.status = status;
-    throw err;
-  }
-};
-
 /*
   Development Error Handler
-
-  In development we show good error messages so if we hit a syntax error or any other previously un-handled error, we can show good info on what happened
+  Catch all errors in our controllers
+  In development we show good error messages so if we hit a syntax error or any other previously un-handled error, 
+  we can show good info on what happened
 */
 exports.developmentErrors = (err, req, res, next) => {
   err.stack = err.stack || '';
+  // Formatting our error stack trace little bit
   const stackFormatted = err.stack
     .split('\n')
     .map(i => i.replace(__dirname.split('/server')[0], '').trim())

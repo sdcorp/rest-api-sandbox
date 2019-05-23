@@ -1,9 +1,7 @@
-const { validationResult } = require('express-validator/check');
 const TestModel = require('../models/Test');
-const {
-  catchExpValidatorErrors,
-  acceptOnlyJson,
-} = require('../handlers/errorHandlers');
+const { catchExpValidatorErrors } = require('../helpers/errorHandlers');
+
+const { acceptOnlyJson, checkIfExist } = require('../helpers/customHandlers');
 
 // TODO Make check if exist also a separate handler (mb combine with Express Validator)
 
@@ -21,13 +19,7 @@ exports.getSingleDoc = async (req, res) => {
   // validation params id
   catchExpValidatorErrors(req);
   const { id } = req.params;
-  const doc = await TestModel.findById(id);
-  // check if doc is not in DB.  we can do this in custom validator -> check('email').custom(cb)
-  if (!doc) {
-    const err = new Error(`Doc with id [${id}] not found`);
-    err.status = 404;
-    throw err;
-  }
+  const doc = await checkIfExist(id, TestModel);
   res.status(200).json({ doc });
 };
 
@@ -37,8 +29,7 @@ exports.postData = async (req, res) => {
   // validation
   catchExpValidatorErrors(req);
   const { email } = req.body;
-  // TODO we can do this in custom validator -> check('email').custom(cb)
-  // check if doc exist OR
+  // check if doc exist
   const doc = await TestModel.findOne({ email });
   if (doc) {
     const err = new Error('Doc with this email already exists');
@@ -58,13 +49,8 @@ exports.editSingleDoc = async (req, res) => {
   catchExpValidatorErrors(req);
   const { id } = req.params;
   const { email } = req.body;
-  const doc = await TestModel.findById(id);
-  // check if doc is not in DB. we can do this in custom validator -> check('email').custom(cb)
-  if (!doc) {
-    const err = new Error(`Doc with id [${id}] not found`);
-    err.status = 404;
-    throw err;
-  }
+  // check if doc in DBs
+  await checkIfExist(id, TestModel);
   // check if email not taken by someone else
   const isTaken = await TestModel.findOne({ email });
   if (isTaken && isTaken._id.toString() !== id) {
@@ -87,13 +73,7 @@ exports.deleteSingleDoc = async (req, res) => {
   // validation params id
   catchExpValidatorErrors(req);
   const { id } = req.params;
-  const doc = await TestModel.findByIdAndDelete(id);
-  // TODO we can do this in custom validator -> check('email').custom(cb)
-  // check if doc is not in DB.
-  if (!doc) {
-    const err = new Error(`Doc with id [${id}] not found`);
-    err.status = 404;
-    throw err;
-  }
-  res.status(200).json({ msg: 'Doc deleted successfully', doc });
+  const doc = await checkIfExist(id, TestModel);
+  const deleted = await TestModel.findByIdAndDelete(doc._id);
+  res.status(200).json({ msg: 'Doc deleted successfully', doc: deleted });
 };
