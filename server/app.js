@@ -1,7 +1,6 @@
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
-const passport = require('passport');
 const errorHandlers = require('./helpers/errorHandlers');
 const testRoutes = require('./routes/testRoutes');
 
@@ -14,10 +13,6 @@ app.use(express.static(path.resolve(__dirname, '../client/build')));
 // Takes the raw requests and turns them into usable properties on req.body
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-// Passport JS is what we use to handle our logins
-app.use(passport.initialize());
-app.use(passport.session());
 
 // After allllll that above middleware, we finally handle our own routes!
 app.use('/api', testRoutes);
