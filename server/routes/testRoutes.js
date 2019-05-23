@@ -1,7 +1,7 @@
 const express = require('express');
 const { check, param } = require('express-validator/check');
 
-const { catchErrors } = require('../handlers/errorHandlers');
+const { catchErrors } = require('../helpers/errorHandlers');
 const {
   getData,
   postData,
@@ -17,7 +17,13 @@ const router = express.Router();
 router
   .route('/test')
   .get(catchErrors(getData))
-  .post([check('email', 'Invalid email').isEmail()], catchErrors(postData));
+  .post(
+    [
+      check('email', 'Invalid email').isEmail(),
+      check('tel', 'Invalid tel').isMobilePhone('uk-UA'),
+    ],
+    catchErrors(postData)
+  );
 
 router
   .route('/test/:id')

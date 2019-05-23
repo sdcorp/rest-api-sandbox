@@ -11,6 +11,10 @@ const testSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
+    tel: {
+      type: String,
+      trim: true,
+    },
   },
   { timestamps: true }
 );
