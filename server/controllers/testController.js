@@ -28,7 +28,7 @@ exports.postData = async (req, res) => {
   acceptOnlyJson(req);
   // validation
   catchExpValidatorErrors(req);
-  const { email } = req.body;
+  const { email, tel } = req.body;
   // check if doc exist
   const doc = await TestModel.findOne({ email });
   if (doc) {
@@ -37,7 +37,7 @@ exports.postData = async (req, res) => {
     throw err;
   }
   // add new doc to DB
-  const newDoc = new TestModel({ email });
+  const newDoc = new TestModel({ email, tel });
   await newDoc.save();
   res.status(201).json({ msg: 'Doc added successfully!', doc: newDoc });
 };
@@ -48,7 +48,7 @@ exports.editSingleDoc = async (req, res) => {
   // validation params id
   catchExpValidatorErrors(req);
   const { id } = req.params;
-  const { email } = req.body;
+  const { email, tel } = req.body;
   // check if doc in DBs
   await checkIfExist(id, TestModel);
   // check if email not taken by someone else
@@ -60,9 +60,10 @@ exports.editSingleDoc = async (req, res) => {
   }
 
   // finally update the doc
+  // ! If we not updating tel, it will be null. Need to be fixed.
   const updatedDoc = await TestModel.findByIdAndUpdate(
     id,
-    { email },
+    { email, tel },
     { new: true }
   );
   // result
