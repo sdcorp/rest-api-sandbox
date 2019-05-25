@@ -1,5 +1,5 @@
 const TestModel = require('../models/Test');
-const { catchExpValidatorErrors } = require('../helpers/errorHandlers');
+const { catchExpressValidatorErrors } = require('../helpers/errorHandlers');
 
 const { acceptOnlyJson, checkIfExist } = require('../helpers/customHandlers');
 
@@ -17,7 +17,7 @@ exports.getData = async (req, res) => {
 
 exports.getSingleDoc = async (req, res) => {
   // validation params id
-  catchExpValidatorErrors(req);
+  catchExpressValidatorErrors(req);
   const { id } = req.params;
   const doc = await checkIfExist(id, TestModel);
   res.status(200).json({ doc });
@@ -27,7 +27,7 @@ exports.postData = async (req, res) => {
   // only json
   acceptOnlyJson(req);
   // validation
-  catchExpValidatorErrors(req);
+  catchExpressValidatorErrors(req);
   const { email, tel } = req.body;
   // check if doc exist
   const doc = await TestModel.findOne({ email });
@@ -46,7 +46,7 @@ exports.editSingleDoc = async (req, res) => {
   // only json headers
   acceptOnlyJson(req);
   // validation params id
-  catchExpValidatorErrors(req);
+  catchExpressValidatorErrors(req);
   const { id } = req.params;
   const { email } = req.body;
   // check if doc in DB
@@ -65,7 +65,7 @@ exports.editSingleDoc = async (req, res) => {
 
 exports.deleteSingleDoc = async (req, res) => {
   // validation params id
-  catchExpValidatorErrors(req);
+  catchExpressValidatorErrors(req);
   const { id } = req.params;
   const doc = await checkIfExist(id, TestModel);
   const deleted = await TestModel.findByIdAndDelete(doc._id);
