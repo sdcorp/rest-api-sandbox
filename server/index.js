@@ -10,9 +10,7 @@ mongoose.connect(process.env.DATABASE, {
   useFindAndModify: false,
 });
 mongoose.Promise = global.Promise; // Tell Mongoose to use ES6 promises
-mongoose.connection.on('error', err =>
-  console.error(`🙅  🚫   🙅  🚫   🙅  🚫   🙅  🚫   ➞ ➞ ➞  ${err.message}`)
-);
+mongoose.connection.on('error', err => console.error(`🙅  🚫   🙅  🚫   🙅  🚫   🙅  🚫   ➞ ➞ ➞  ${err.message}`));
 
 // import of all our model
 require('./models/Test');

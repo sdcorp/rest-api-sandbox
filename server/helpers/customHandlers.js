@@ -33,9 +33,7 @@ exports.checkIfExist = async (id, Model, options = {}) => {
   const found = await Model.findById(id);
   // If not found - generate error and throw it next
   if (!found) {
-    const err = new Error(
-      customMessage || `${entity} with id [${id}] is not found`
-    );
+    const err = new Error(customMessage || `${entity} with id [${id}] is not found`);
     err.status = status;
     throw err;
   }

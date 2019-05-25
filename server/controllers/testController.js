@@ -48,25 +48,18 @@ exports.editSingleDoc = async (req, res) => {
   // validation params id
   catchExpValidatorErrors(req);
   const { id } = req.params;
-  const { email, tel } = req.body;
-  // check if doc in DBs
+  const { email } = req.body;
+  // check if doc in DB
   await checkIfExist(id, TestModel);
   // check if email not taken by someone else
-  const isTaken = await TestModel.findOne({ email });
+  const isTaken = await TestModel.findOne({ email }); // TODO Make custom handlder
   if (isTaken && isTaken._id.toString() !== id) {
     const err = new Error(`This email is already taken`);
     err.status = 422;
     throw err;
   }
-
   // finally update the doc
-  // ! If we not updating tel, it will be null. Need to be fixed.
-  const updatedDoc = await TestModel.findByIdAndUpdate(
-    id,
-    { email, tel },
-    { new: true }
-  );
-  // result
+  const updatedDoc = await TestModel.findByIdAndUpdate(id, { $set: { ...req.body } }, { new: true });
   res.status(200).json({ msg: 'Doc updated successfully', doc: updatedDoc });
 };
 

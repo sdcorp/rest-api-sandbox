@@ -32,8 +32,8 @@ exports.dbValidationErrors = (err, req, res, next) => {
   if (!err.errors) return next(err);
   const data = Object.entries(err.errors).map(([schemaField, errObj]) => ({
     schemaField, // field in Schema
-    message: `${errObj.path.charAt(0).toUpperCase() +
-      errObj.path.slice(1)} is ${errObj.kind}`, // message from required field in Schema
+    // message from required field in Schema
+    message: `${errObj.path.charAt(0).toUpperCase() + errObj.path.slice(1)} is ${errObj.kind}`,
   }));
   const dbError = new Error('DB Validation failed!');
   dbError.status = 422;
@@ -42,12 +42,12 @@ exports.dbValidationErrors = (err, req, res, next) => {
 };
 
 /**
- * Express-validator wrapper.
+ * Express-validator error wrapper.
  * @param {Object} req Request object
  * @param { { msg:string, status:number } } options Settings object
  * @returns {Error} Return custom Error if Express-Validation failed
  */
-exports.catchExpValidatorErrors = (req, options = {}) => {
+exports.catchExpressValidatorErrors = (req, options = {}) => {
   // default options
   const { msg = 'Validation failed', status = 422 } = options;
   const errors = validationResult(req);
