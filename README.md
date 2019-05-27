@@ -6,6 +6,8 @@ Stack: NodeJS, Express, MongoDB.
 
 The project has nice error-handling and server-side validation.
 
+You can easily to test api, using Postman JSON collection file.
+
 ----
 ## Installation
 
