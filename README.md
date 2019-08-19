@@ -4,9 +4,9 @@ This is a simple REST API with one CRUD flow, written by MVC pattern.
 
 Stack: NodeJS, Express, MongoDB.
 
-The project has nice error-handling and server-side validation.
+The project has nice error-handling, server-side validation, protected routes, and basic authorization using PassportJS.
 
-You can easily to test api, using Postman JSON collection file.
+You can easily to test api, using Swagger. Visit `http:localhost:8000/api-docs` endpoint in your browser.
 
 ----
 ## Installation
