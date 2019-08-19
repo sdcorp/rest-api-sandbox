@@ -4,14 +4,11 @@ mongoose.Promise = global.Promise;
 
 const testSchema = new mongoose.Schema(
   {
-    email: {
+    uniqId: {
       type: String,
-      required: true,
-      lowercase: true,
       unique: true,
-      trim: true,
     },
-    tel: {
+    documentName: {
       type: String,
       trim: true,
     },

@@ -1,65 +1,50 @@
+const HttpError = require('http-errors');
 const TestModel = require('../models/Test');
-const { catchExpressValidatorErrors } = require('../helpers/errorHandlers');
-
-const { acceptOnlyJson, checkIfExist } = require('../helpers/customHandlers');
+const { catchExpressValidatorErrors } = require('../helpers/customValidators');
+const { checkIfExist } = require('../helpers/customHandlers');
 
 // TODO Make check if exist also a separate handler (mb combine with Express Validator)
 
 exports.getData = async (req, res) => {
   const docs = await TestModel.find();
   if (docs.length === 0) {
-    const err = new Error('No Docs in DB');
-    err.status = 404;
-    throw err;
+    throw new HttpError[404]('No Docs in DB');
   }
-  res.json({ docs });
+  res.json({ data: req.user, docs });
 };
 
 exports.getSingleDoc = async (req, res) => {
-  // validation params id
+  // validation params.id
   catchExpressValidatorErrors(req);
   const { id } = req.params;
-  const doc = await checkIfExist(id, TestModel);
+  const doc = await checkIfExist({ id }, TestModel);
   res.status(200).json({ doc });
 };
 
 exports.postData = async (req, res) => {
-  // only json
-  acceptOnlyJson(req);
   // validation
   catchExpressValidatorErrors(req);
-  const { email, tel } = req.body;
+  const { uniqId, documentName } = req.body;
   // check if doc exist
-  const doc = await TestModel.findOne({ email });
+  const doc = await TestModel.findOne({ uniqId });
   if (doc) {
-    const err = new Error('Doc with this email already exists');
-    err.status = 400;
-    throw err;
+    throw new HttpError[409]('Doc with this ID already exists');
   }
   // add new doc to DB
-  const newDoc = new TestModel({ email, tel });
+  const newDoc = new TestModel({ uniqId, documentName });
   await newDoc.save();
   res.status(201).json({ msg: 'Doc added successfully!', doc: newDoc });
 };
 
 exports.editSingleDoc = async (req, res) => {
-  // only json headers
-  acceptOnlyJson(req);
   // validation params id
   catchExpressValidatorErrors(req);
   const { id } = req.params;
-  const { email } = req.body;
-  // check if doc in DB
-  await checkIfExist(id, TestModel);
-  // check if email not taken by someone else
-  const isTaken = await TestModel.findOne({ email }); // TODO Make custom handlder
-  if (isTaken && isTaken._id.toString() !== id) {
-    const err = new Error(`This email is already taken`);
-    err.status = 422;
-    throw err;
-  }
-  // finally update the doc
-  const updatedDoc = await TestModel.findByIdAndUpdate(id, { $set: { ...req.body } }, { new: true });
+  const { documentName } = req.body;
+  // check if doc in Model
+  await checkIfExist({ value: id }, TestModel);
+  // update the doc
+  const updatedDoc = await TestModel.findByIdAndUpdate(id, { $set: { documentName } }, { new: true });
   res.status(200).json({ msg: 'Doc updated successfully', doc: updatedDoc });
 };
 
@@ -67,7 +52,7 @@ exports.deleteSingleDoc = async (req, res) => {
   // validation params id
   catchExpressValidatorErrors(req);
   const { id } = req.params;
-  const doc = await checkIfExist(id, TestModel);
+  const doc = await checkIfExist({ value: id }, TestModel);
   const deleted = await TestModel.findByIdAndDelete(doc._id);
   res.status(200).json({ msg: 'Doc deleted successfully', doc: deleted });
 };

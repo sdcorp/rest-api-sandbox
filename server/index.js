@@ -14,11 +14,12 @@ mongoose.connection.on('error', err => console.error(`🙅  🚫   🙅  🚫   
 
 // import of all our model
 require('./models/Test');
+require('./models/User');
 
 // Start our app!
 const app = require('./app');
 
-app.set('port', process.env.PORT);
+app.set('port', process.env.PORT || 8000);
 const server = app.listen(app.get('port'), () => {
-  console.log(`Express running →  PORT ${server.address().port}`);
+  console.log(`Server running  ➞  PORT ${server.address().port}`);
 });
