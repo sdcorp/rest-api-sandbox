@@ -6,6 +6,7 @@ const swaggerDocument = require('./swagger.json');
 const errorHandlers = require('./helpers/errorHandlers');
 const testRoutes = require('./routes/testRoutes');
 const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 //  Init app
 const app = express();
@@ -31,6 +32,7 @@ app.use(passport.session());
 // After allllll that above middleware, we finally handle our own routes!
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/test', testRoutes);
+app.use('/api/v1/user', userRoutes);
 
 // If that above routes didnt work, we 404 them and forward to error handler
 app.use(errorHandlers.notFound);

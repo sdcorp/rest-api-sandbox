@@ -7,6 +7,12 @@ mongoose.Promise = global.Promise;
 
 const userSchema = new mongoose.Schema(
   {
+    username: {
+      type: String,
+      trim: true,
+      unique: true,
+      required: true,
+    },
     email: {
       type: String,
       unique: true,
@@ -28,6 +34,10 @@ userSchema.statics.findUserByEmail = function(email) {
   return this.findOne({ email });
 };
 
+userSchema.statics.findByUserName = function(username) {
+  return this.findOne({ username });
+};
+
 userSchema.methods.validatePassword = function(password) {
   return bcrypt.compareSync(password, this.password);
 };
@@ -42,11 +52,7 @@ userSchema.methods.generateJWT = function() {
 };
 
 userSchema.methods.toAuthJSON = function() {
-  return {
-    _id: this._id,
-    email: this.email,
-    token: this.generateJWT(),
-  };
+  return { token: this.generateJWT() };
 };
 
 module.exports = mongoose.model('User', userSchema);

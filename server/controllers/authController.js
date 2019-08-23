@@ -7,21 +7,20 @@ const { catchExpressValidatorErrors } = require('../helpers/customValidators');
 
 exports.register = async (req, res) => {
   catchExpressValidatorErrors(req);
-  const { email, password } = req.body;
+  const { username, email, password } = req.body;
   //  check if user exists
   let user = await User.findUserByEmail(email);
   if (user) {
     throw new HttpError[409]('User with this email already exists');
   }
   // create user instanse
-  user = new User({ email, password });
+  user = new User({ username, email, password });
   // hash password
   user.hashPassword(password);
   // save user
   await user.save();
-  // create token
-  const token = user.generateJWT();
-  res.status(201).json({ msg: 'User registered successfully', token });
+
+  res.status(201).json({ msg: 'User registered successfully' });
 };
 
 exports.login = (req, res, next) => {
@@ -32,7 +31,8 @@ exports.login = (req, res, next) => {
     }
 
     if (passportUser) {
-      return res.json({ user: passportUser.toAuthJSON() });
+      const token = passportUser.toAuthJSON();
+      return res.status(200).json(token);
     }
     throw new HttpError[401]('Email or password are wrong');
   })(req, res, next);
@@ -44,6 +44,8 @@ exports.authorize = (req, res, next) =>
       next(err);
     }
     if (passportUser) {
+      const { email } = passportUser;
+      req.email = email; // if authorized, pass email to next handler
       return next();
     }
     const accessError = new HttpError[401]('Access denied');
@@ -64,12 +66,12 @@ exports.checkToken = (req, res, next) =>
     throw accessError;
   })(req, res, next);
 
-exports.checkExistEmail = async (req, res) => {
+exports.checkExistUsername = async (req, res) => {
   catchExpressValidatorErrors(req);
-  const { email } = req.query;
-  const user = await User.findUserByEmail(email);
+  const { username } = req.query;
+  const user = await User.findByUserName(username);
   if (user) {
-    throw new HttpError[409]('User with this email already exists');
+    throw new HttpError[409]('Username already taken');
   }
   res.sendStatus(200);
 };

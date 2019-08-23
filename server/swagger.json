@@ -14,6 +14,9 @@
   ],
   "tags": [
     {
+      "name": "User"
+    },
+    {
       "name": "Authorization"
     },
     {
@@ -22,6 +25,40 @@
     }
   ],
   "paths": {
+    "/user/profile": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Return profile info",
+        "operationId": "profileInfo",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {}
+          },
+          "409": {
+            "description": "if username already taken",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
     "/auth/register": {
       "post": {
         "tags": ["Authorization"],
@@ -82,7 +119,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/User"
+                "$ref": "#/components/schemas/LoginSchema"
               }
             }
           },
@@ -162,17 +199,16 @@
         "security": [{ "bearerAuth": [] }]
       }
     },
-    "/auth/checkExistEmail": {
+    "/auth/checkExistUsername": {
       "get": {
         "tags": ["Authorization"],
-        "summary": "Check if email already taken",
-        "description": "WARNING!!! Its no safety, providing this route. Hacker can use this route for collect your active users emails and send spam to them.",
-        "operationId": "checkEmailExist",
+        "summary": "Check if username already taken",
+        "operationId": "checkUsernameExist",
         "parameters": [
           {
-            "name": "email",
+            "name": "username",
             "in": "query",
-            "description": "email that need checked",
+            "description": "username that need checked",
             "required": true,
             "schema": {
               "type": "string"
@@ -185,7 +221,7 @@
             "content": {}
           },
           "409": {
-            "description": "if email already taken",
+            "description": "if username already taken",
             "content": {
               "application/json": {
                 "schema": {
@@ -381,6 +417,20 @@
         }
       },
       "User": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "LoginSchema": {
         "type": "object",
         "properties": {
           "email": {
