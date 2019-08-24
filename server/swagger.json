@@ -33,10 +33,16 @@
         "responses": {
           "200": {
             "description": "successful operation",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
           },
-          "409": {
-            "description": "if username already taken",
+          "404": {
+            "description": "User not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -44,9 +50,59 @@
                 }
               }
             }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "put": {
+        "tags": ["User"],
+        "summary": "Return updated profile info",
+        "operationId": "profileInfoUpd",
+        "requestBody": {
+          "description": "Updated user object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
           },
-          "422": {
-            "description": "Validation failed",
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "delete": {
+        "tags": ["User"],
+        "summary": "Delete user info",
+        "operationId": "profileInfoDelete",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {}
+          },
+          "404": {
+            "description": "User not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -419,6 +475,12 @@
       "User": {
         "type": "object",
         "properties": {
+          "firstname": {
+            "type": "string"
+          },
+          "lastname": {
+            "type": "string"
+          },
           "username": {
             "type": "string"
           },
@@ -426,6 +488,21 @@
             "type": "string"
           },
           "password": {
+            "type": "string"
+          },
+          "gravatar": {
+            "type": "string",
+            "format": "byte"
+          }
+        }
+      },
+      "UpdateUser": {
+        "type": "object",
+        "properties": {
+          "firstname": {
+            "type": "string"
+          },
+          "lastname": {
             "type": "string"
           }
         }

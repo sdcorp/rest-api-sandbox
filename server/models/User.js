@@ -2,11 +2,20 @@ const mongoose = require('mongoose');
 const mongodbErrorHandler = require('mongoose-mongodb-errors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const identicon = require('identicon-github');
 
 mongoose.Promise = global.Promise;
 
 const userSchema = new mongoose.Schema(
   {
+    firstname: {
+      type: String,
+      trim: true,
+    },
+    lastname: {
+      type: String,
+      trim: true,
+    },
     username: {
       type: String,
       trim: true,
@@ -24,11 +33,31 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    // Socials
+    // socialMediaHandles: {
+    //   type: Map,
+    //   of: String,
+    // },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toJSON: {
+      virtuals: true,
+      versionKey: false,
+      transform: (doc, ret) => {
+        delete ret.id;
+        return ret;
+      },
+    },
+  }
 );
 
 userSchema.plugin(mongodbErrorHandler);
+
+userSchema.virtual('gravatar').get(function() {
+  const base64icon = identicon(this.username, { pixelSize: 16 }).toDataURL();
+  return base64icon;
+});
 
 userSchema.statics.findUserByEmail = function(email) {
   return this.findOne({ email });

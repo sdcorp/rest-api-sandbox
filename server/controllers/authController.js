@@ -20,7 +20,7 @@ exports.register = async (req, res) => {
   // save user
   await user.save();
 
-  res.status(201).json({ msg: 'User registered successfully' });
+  res.status(201).json({ message: 'User registered successfully' });
 };
 
 exports.login = (req, res, next) => {
