@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const swaggerUi = require('swagger-ui-express');
+const cors = require('cors');
 const swaggerDocument = require('./swagger.json');
 const errorHandlers = require('./helpers/errorHandlers');
 const postRoutes = require('./routes/postRoutes');
@@ -10,6 +11,8 @@ const userRoutes = require('./routes/userRoutes');
 
 //  Init app
 const app = express();
+
+app.use(cors());
 
 // Passport Config
 require('./middleware/passport')(passport);
