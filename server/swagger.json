@@ -14,10 +14,12 @@
   ],
   "tags": [
     {
-      "name": "User"
+      "name": "User",
+      "description": "Profile information"
     },
     {
-      "name": "Authorization"
+      "name": "Authorization",
+      "description": "Authorization routes"
     },
     {
       "name": "Post",

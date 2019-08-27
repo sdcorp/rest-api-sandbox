@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const HttpError = require('http-errors');
 
+const { acceptOnlyJson } = require('../helpers/customHandlers');
+
 const User = mongoose.model('User');
 
 exports.getProfile = async (req, res) => {
@@ -12,6 +14,7 @@ exports.getProfile = async (req, res) => {
 };
 
 exports.editProfile = async (req, res) => {
+  acceptOnlyJson(req);
   const { firstname, lastname, avatar } = req.body;
   let user = await User.findOneAndUpdate(
     { email: req.email },

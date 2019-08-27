@@ -1,3 +1,5 @@
+const HttpError = require('http-errors');
+
 /*
   This is a file of data and helper functions
 */
@@ -5,15 +7,11 @@
 /**
  * Short util handler, which allows us accept only JSON type of our req
  * @param {Object} req Request obj from our controller
- * @param { { msg:string, status:number } } options Custom error message
  * @returns {Error} Return Error if req headers is not JSON type
  */
-exports.acceptOnlyJson = (req, options = {}) => {
-  const { msg = 'Accept only application/json', status = 406 } = options;
+exports.acceptOnlyJson = req => {
   if (!req.is('application/json')) {
-    const err = new Error(msg);
-    err.status = status;
-    throw err;
+    throw new HttpError[406]('Accept only application/json. Please provide correct Content-Type');
   }
 };
 

@@ -4,8 +4,10 @@ const HttpError = require('http-errors');
 
 const User = mongoose.model('User');
 const { catchExpressValidatorErrors } = require('../helpers/customValidators');
+const { acceptOnlyJson } = require('../helpers/customHandlers');
 
 exports.register = async (req, res) => {
+  acceptOnlyJson(req);
   catchExpressValidatorErrors(req);
   const { username, email, password } = req.body;
   //  check if user exists
@@ -24,6 +26,7 @@ exports.register = async (req, res) => {
 };
 
 exports.login = (req, res, next) => {
+  acceptOnlyJson(req);
   catchExpressValidatorErrors(req);
   return passport.authenticate('local', { session: false }, (err, passportUser, info) => {
     if (err) {

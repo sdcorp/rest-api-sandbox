@@ -2,7 +2,7 @@ const HttpError = require('http-errors');
 const Post = require('../models/Post');
 const User = require('../models/User');
 const { catchExpressValidatorErrors } = require('../helpers/customValidators');
-const { checkIfExist } = require('../helpers/customHandlers');
+const { checkIfExist, acceptOnlyJson } = require('../helpers/customHandlers');
 
 // TODO Make check if exist also a separate handler (mb combine with Express Validator)
 
@@ -23,6 +23,7 @@ exports.getSinglePost = async (req, res) => {
 };
 
 exports.createPost = async (req, res) => {
+  acceptOnlyJson(req);
   // validation
   catchExpressValidatorErrors(req);
   const { title, text } = req.body;
@@ -36,6 +37,7 @@ exports.createPost = async (req, res) => {
 };
 
 exports.editSinglePost = async (req, res) => {
+  acceptOnlyJson(req);
   // validation params id
   catchExpressValidatorErrors(req);
   const { id } = req.params;
