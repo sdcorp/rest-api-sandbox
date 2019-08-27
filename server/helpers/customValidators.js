@@ -10,10 +10,10 @@ const { validationResult } = require('express-validator');
  */
 exports.catchExpressValidatorErrors = (req, options = {}) => {
   // default options
-  const { msg = 'Validation failed', status = 422 } = options;
+  const { message = 'Validation failed', status = 422 } = options;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    const err = new Error(msg);
+    const err = new Error(message);
     err.status = status;
     err.data = errors.array();
     throw err;

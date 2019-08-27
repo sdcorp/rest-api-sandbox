@@ -12,7 +12,7 @@ exports.catchAsyncErrors = fn => (req, res, next) => fn(req, res, next).catch(ne
   Not Found Error Handler
   If we hit a route that is not found, we mark it as 404 and pass it along to the next error handler to display
 */
-exports.notFound = (req, res, next) => next(new HttpError[404]('Not Found! Wrong route'));
+exports.notFound = (req, res, next) => next(new HttpError[404]('Not Found! Wrong api endpoint'));
 
 /*
   MongoDB Validation Error Handler

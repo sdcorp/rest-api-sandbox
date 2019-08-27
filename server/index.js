@@ -13,13 +13,14 @@ mongoose.Promise = global.Promise; // Tell Mongoose to use ES6 promises
 mongoose.connection.on('error', err => console.error(`🙅  🚫   🙅  🚫   🙅  🚫   🙅  🚫   ➞ ➞ ➞  ${err.message}`));
 
 // import of all our model
-require('./models/Test');
 require('./models/User');
+require('./models/Post');
 
 // Start our app!
 const app = require('./app');
 
 app.set('port', process.env.PORT || 8000);
 const server = app.listen(app.get('port'), () => {
-  console.log(`Server running  ➞  PORT ${server.address().port}`);
+  const { port } = server.address();
+  console.log(`Server running  ➞  PORT ${port} and Swagger link  ➞  http://localhost:${port}/api-docs`);
 });

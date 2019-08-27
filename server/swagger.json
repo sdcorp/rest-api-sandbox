@@ -20,8 +20,8 @@
       "name": "Authorization"
     },
     {
-      "name": "Test",
-      "description": "Test routes"
+      "name": "Post",
+      "description": "User Posts routes"
     }
   ],
   "paths": {
@@ -299,11 +299,11 @@
         }
       }
     },
-    "/test/documents": {
+    "/posts": {
       "get": {
-        "tags": ["Test"],
-        "summary": "Get all documents",
-        "operationId": "getAllDocuments",
+        "tags": ["Post"],
+        "summary": "Get all Posts",
+        "operationId": "getAllPosts",
         "responses": {
           "200": {
             "description": "successful operation",
@@ -312,7 +312,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Document"
+                    "$ref": "#/components/schemas/Post"
                   }
                 }
               }
@@ -321,15 +321,15 @@
         }
       },
       "post": {
-        "tags": ["Test"],
-        "summary": "Create document",
-        "operationId": "createDocument",
+        "tags": ["Post"],
+        "summary": "Create post",
+        "operationId": "createPost",
         "requestBody": {
-          "description": "Created document object",
+          "description": "Created post object",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Document"
+                "$ref": "#/components/schemas/Post"
               }
             }
           },
@@ -340,19 +340,20 @@
             "description": "successful operation",
             "content": {}
           }
-        }
+        },
+        "security": [{ "bearerAuth": [] }]
       }
     },
-    "/test/document/{id}": {
+    "/posts/post/{id}": {
       "get": {
-        "tags": ["Test"],
-        "summary": "Get single document",
-        "operationId": "getSingleDocument",
+        "tags": ["Post"],
+        "summary": "Get single post",
+        "operationId": "getSinglePost",
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "id of doc that need to be returned",
+            "description": "id of post that need to be returned",
             "required": true,
             "schema": {
               "type": "string"
@@ -365,7 +366,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Document"
+                  "$ref": "#/components/schemas/Post"
                 }
               }
             }
@@ -373,15 +374,15 @@
         }
       },
       "put": {
-        "tags": ["Test"],
-        "summary": "Update single document",
+        "tags": ["Post"],
+        "summary": "Update single post",
         "description": "This can only be done by the logged in user.",
-        "operationId": "updateSingleDocument",
+        "operationId": "updateSinglePost",
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "id of doc that need to be updated",
+            "description": "id of post that need to be updated",
             "required": true,
             "schema": {
               "type": "string"
@@ -393,7 +394,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Document"
+                "$ref": "#/components/schemas/Post"
               }
             }
           },
@@ -405,7 +406,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Document"
+                  "$ref": "#/components/schemas/Post"
                 }
               }
             }
@@ -424,15 +425,15 @@
         "security": [{ "bearerAuth": [] }]
       },
       "delete": {
-        "tags": ["Test"],
-        "summary": "Delete single document",
+        "tags": ["Post"],
+        "summary": "Delete single Post",
         "description": "This can only be done by the logged in user.",
-        "operationId": "deleteSingleDocument",
+        "operationId": "deleteSinglePost",
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "id of doc that need to be deleted",
+            "description": "id of post that need to be deleted",
             "required": true,
             "schema": {
               "type": "string"
@@ -461,13 +462,13 @@
   },
   "components": {
     "schemas": {
-      "Document": {
+      "Post": {
         "type": "object",
         "properties": {
-          "uniqId": {
+          "title": {
             "type": "string"
           },
-          "documentName": {
+          "text": {
             "type": "string"
           }
         }
@@ -475,12 +476,6 @@
       "User": {
         "type": "object",
         "properties": {
-          "firstname": {
-            "type": "string"
-          },
-          "lastname": {
-            "type": "string"
-          },
           "username": {
             "type": "string"
           },
@@ -489,10 +484,6 @@
           },
           "password": {
             "type": "string"
-          },
-          "gravatar": {
-            "type": "string",
-            "format": "byte"
           }
         }
       },
