@@ -1,8 +1,11 @@
 const mongoose = require('mongoose');
 const mongodbErrorHandler = require('mongoose-mongodb-errors');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
-const identicon = require('identicon-github');
+const Identicon = require('identicon.js');
+
+// const Post = require('./Post');
 
 mongoose.Promise = global.Promise;
 
@@ -60,7 +63,11 @@ const userSchema = new mongoose.Schema(
 userSchema.plugin(mongodbErrorHandler);
 
 userSchema.virtual('gravatar').get(function() {
-  const base64icon = identicon(this.username, { pixelSize: 16 }).toDataURL();
+  const hash = crypto
+    .createHash('md5')
+    .update(this.email)
+    .digest('hex');
+  const base64icon = new Identicon(hash, 32).toString();
   return base64icon;
 });
 
@@ -86,7 +93,13 @@ userSchema.methods.generateJWT = function() {
 };
 
 userSchema.methods.toAuthJSON = function() {
-  return { token: this.generateJWT() };
+  return { userId: this._id, token: this.generateJWT() };
 };
+
+userSchema.pre('remove', async function() {
+  await this.model('Post')
+    .deleteMany({ author: this._id })
+    .exec();
+});
 
 module.exports = mongoose.model('User', userSchema);

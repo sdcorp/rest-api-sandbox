@@ -1,10 +1,12 @@
+const mongoose = require('mongoose');
 const HttpError = require('http-errors');
-const Post = require('../models/Post');
-const User = require('../models/User');
 const { catchExpressValidatorErrors } = require('../helpers/customValidators');
 const { checkIfExist, acceptOnlyJson } = require('../helpers/customHandlers');
 
 // TODO Make check if exist also a separate handler (mb combine with Express Validator)
+
+const Post = mongoose.model('Post');
+const User = mongoose.model('User');
 
 exports.getPosts = async (req, res) => {
   const posts = await Post.find().populate('author', { password: 0, posts: 0 });
@@ -27,12 +29,15 @@ exports.createPost = async (req, res) => {
   // validation
   catchExpressValidatorErrors(req);
   const { title, text } = req.body;
-  const user = await User.findOne({ email: req.email });
+
   // add new post to DB
-  const post = new Post({ title, text, author: user._id });
+  const post = new Post({ title, text, author: req.userId });
+  await post.save();
+
+  const user = await User.findById(req.userId);
   user.posts.push(post);
   await user.save();
-  await post.save();
+
   res.status(201).json({ message: 'Post created successfully!', data: post });
 };
 
@@ -42,11 +47,23 @@ exports.editSinglePost = async (req, res) => {
   catchExpressValidatorErrors(req);
   const { id } = req.params;
   const { title, text } = req.body;
+
+  const post = Post.findById(id);
+  if (!post) {
+    throw new HttpError[404]('Post not found');
+  }
+
+  // check author
+  if (post.author.toString() !== req.userId.toString()) {
+    throw new HttpError[403]('You have not permissions to this operation');
+  }
+
   // update the post
   const updatedPost = await Post.findByIdAndUpdate(id, { $set: { title, text } }, { new: true });
   if (!updatedPost) {
-    throw new HttpError[404]('Post not found or updating failed');
+    throw new HttpError[400]('Updating failed');
   }
+
   res.status(200).json({ message: 'Post updated successfully', data: updatedPost });
 };
 
@@ -54,9 +71,23 @@ exports.deleteSinglePost = async (req, res) => {
   // validation params id
   catchExpressValidatorErrors(req);
   const { id } = req.params;
-  const post = await Post.findByIdAndDelete(id);
+
+  const post = await Post.findById(id);
   if (!post) {
     throw new HttpError[404]('Post not found');
   }
+  // check author
+  if (post.author.toString() !== req.userId.toString()) {
+    throw new HttpError[403]('You have not permissions to this operation');
+  }
+
+  // author confirmed - delete post
+  await Post.findByIdAndRemove(id);
+
+  // delete post from user model
+  const user = await User.findById(req.userId);
+  user.posts.pull(id);
+  await user.save();
+
   res.status(200).json({ message: 'Post deleted successfully' });
 };

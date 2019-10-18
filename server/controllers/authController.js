@@ -33,41 +33,13 @@ exports.login = (req, res, next) => {
       return next(err);
     }
 
-    if (passportUser) {
-      const token = passportUser.toAuthJSON();
-      return res.status(200).json(token);
+    if (!passportUser) {
+      throw new HttpError[401]('Email or password are wrong');
     }
-    throw new HttpError[401]('Email or password are wrong');
+    const authResponse = passportUser.toAuthJSON();
+    return res.status(200).json(authResponse);
   })(req, res, next);
 };
-
-exports.authorize = (req, res, next) =>
-  passport.authenticate('jwt', { session: false }, (err, passportUser, info) => {
-    if (err) {
-      next(err);
-    }
-    if (passportUser) {
-      const { email } = passportUser;
-      req.email = email; // if authorized, pass email to next handler
-      return next();
-    }
-    const accessError = new HttpError[401]('Access denied');
-    accessError.data = info;
-    throw accessError;
-  })(req, res, next);
-
-exports.checkToken = (req, res, next) =>
-  passport.authenticate('jwt', { session: false }, (err, passportUser, info) => {
-    if (err) {
-      return res.status(400).json({ err });
-    }
-    if (passportUser) {
-      return res.status(200).json({ authenticated: true });
-    }
-    const accessError = new HttpError[401]('Invalid token');
-    accessError.data = info;
-    throw accessError;
-  })(req, res, next);
 
 exports.checkExistUsername = async (req, res) => {
   catchExpressValidatorErrors(req);

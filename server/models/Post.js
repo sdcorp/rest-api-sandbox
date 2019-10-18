@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const mongodbErrorHandler = require('mongoose-mongodb-errors');
 
+const User = mongoose.model('User');
+
 mongoose.Promise = global.Promise;
 
 const postSchema = new mongoose.Schema(

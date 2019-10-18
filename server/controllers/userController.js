@@ -33,7 +33,7 @@ exports.editProfile = async (req, res) => {
       return ret;
     },
   });
-  res.status(200).json({ message: 'Profile loaded successfully', data: user });
+  res.status(200).json({ message: 'Profile updated successfully', data: user });
 };
 
 exports.deleteProfile = async (req, res) => {
@@ -41,6 +41,8 @@ exports.deleteProfile = async (req, res) => {
   if (!user) {
     throw new HttpError[404]('User not found');
   }
-  res.status(200).json({ message: 'Deleted successfully' });
-  // TODO delete all related posts with this user
+  // delete all related posts with this user
+  await user.remove();
+
+  res.status(200).json({ message: 'Profile deleted successfully' });
 };

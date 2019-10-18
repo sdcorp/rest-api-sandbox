@@ -9,7 +9,7 @@ const {
   editSinglePost,
   deleteSinglePost,
 } = require('../controllers/postController');
-const { authorize } = require('../controllers/authController');
+const { authorize } = require('../middleware/authorize');
 
 const router = express.Router();
 
