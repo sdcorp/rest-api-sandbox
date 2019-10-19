@@ -1,9 +1,6 @@
 const mongoose = require('mongoose');
 const HttpError = require('http-errors');
-const { catchExpressValidatorErrors } = require('../helpers/customValidators');
 const { checkIfExist, acceptOnlyJson } = require('../helpers/customHandlers');
-
-// TODO Make check if exist also a separate handler (mb combine with Express Validator)
 
 const Post = mongoose.model('Post');
 const User = mongoose.model('User');
@@ -17,8 +14,6 @@ exports.getPosts = async (req, res) => {
 };
 
 exports.getSinglePost = async (req, res) => {
-  // validation params.id
-  catchExpressValidatorErrors(req);
   const { id } = req.params;
   const post = await checkIfExist({ id }, Post, { entity: 'Post' });
   res.status(200).json({ message: 'Post loaded successfully', data: post });
@@ -26,8 +21,6 @@ exports.getSinglePost = async (req, res) => {
 
 exports.createPost = async (req, res) => {
   acceptOnlyJson(req);
-  // validation
-  catchExpressValidatorErrors(req);
   const { title, text } = req.body;
 
   // add new post to DB
@@ -43,8 +36,6 @@ exports.createPost = async (req, res) => {
 
 exports.editSinglePost = async (req, res) => {
   acceptOnlyJson(req);
-  // validation params id
-  catchExpressValidatorErrors(req);
   const { id } = req.params;
   const { title, text } = req.body;
 
@@ -68,8 +59,6 @@ exports.editSinglePost = async (req, res) => {
 };
 
 exports.deleteSinglePost = async (req, res) => {
-  // validation params id
-  catchExpressValidatorErrors(req);
   const { id } = req.params;
 
   const post = await Post.findById(id);

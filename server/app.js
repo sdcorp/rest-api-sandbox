@@ -15,8 +15,8 @@ const app = express();
 app.use(cors());
 
 // Passport Config
-require('./middleware/passport-local')(passport);
-require('./middleware/passport-jwt')(passport);
+require('./middleware/passportLocal')(passport);
+require('./middleware/passportJwt')(passport);
 
 // Added logging
 app.use(require('morgan')('dev'));
