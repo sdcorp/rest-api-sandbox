@@ -25,13 +25,13 @@ exports.createPost = async (req, res) => {
 
   // add new post to DB
   const post = new Post({ title, text, author: req.userId });
-  await post.save();
+  const storedPost = await post.save();
 
   const user = await User.findById(req.userId);
   user.posts.push(post);
   await user.save();
 
-  res.status(201).json({ message: 'Post created successfully!', data: post });
+  res.status(201).json({ message: 'Post created successfully!', data: storedPost });
 };
 
 exports.editSinglePost = async (req, res) => {

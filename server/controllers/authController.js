@@ -56,8 +56,8 @@ exports.changePassword = async (req, res) => {
 
   const user = await User.findById(req.userId);
   user.hashPassword(newPassword);
-  await user.save();
-  res.status(200).json({ message: 'User password updated successfully', data: user });
+  const storedUser = await user.save();
+  res.status(200).json({ message: 'User password updated successfully', data: storedUser });
 };
 
 exports.forgotPassword = async (req, res) => {
@@ -116,7 +116,7 @@ exports.resetPassword = async (req, res) => {
   user.resetPasswordExpires = null;
 
   // save in db and clear reset-data
-  await user.save();
+  const storedUser = await user.save();
 
-  res.status(200).json({ message: 'Password reset successfully, please re-login', data: user });
+  res.status(200).json({ message: 'Password reset successfully, please re-login', data: storedUser });
 };
