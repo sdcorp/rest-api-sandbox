@@ -32,7 +32,7 @@ router.route('/login').post(
   auth.login
 );
 
-router.route('/checkToken').get(middleware.authorize);
+router.route('/checkToken').get(middleware.authorize, (req, res) => res.status(200).json({ authenticate: true }));
 
 router.route('/checkExistUsername').get(
   middleware.validation([
