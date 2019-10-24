@@ -39,7 +39,7 @@ exports.editSinglePost = async (req, res) => {
   const { id } = req.params;
   const { title, text } = req.body;
 
-  const post = Post.findById(id);
+  const post = await Post.findById(id);
   if (!post) {
     throw new HttpError[404]('Post not found');
   }
