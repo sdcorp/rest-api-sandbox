@@ -17,7 +17,7 @@ router
   .route('/')
   .get(catchAsyncErrors(getPosts))
   .post(
-    middleware.validation([
+    middleware.validate([
       body('title', 'Title is required')
         .not()
         .isEmpty(),
@@ -31,14 +31,14 @@ router
 
 router
   .route('/post/:id')
-  .get(middleware.validation([param('id', 'Invalid id parameter').isMongoId()]), catchAsyncErrors(getSinglePost))
+  .get(middleware.validate([param('id', 'Invalid id parameter').isMongoId()]), catchAsyncErrors(getSinglePost))
   .put(
-    middleware.validation([param('id', 'Invalid id parameter').isMongoId()]),
+    middleware.validate([param('id', 'Invalid id parameter').isMongoId()]),
     middleware.authorize,
     catchAsyncErrors(editSinglePost)
   )
   .delete(
-    middleware.validation([param('id', 'Invalid id parameter').isMongoId()]),
+    middleware.validate([param('id', 'Invalid id parameter').isMongoId()]),
     middleware.authorize,
     catchAsyncErrors(deleteSinglePost)
   );

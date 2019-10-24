@@ -14,7 +14,9 @@ exports.authorize = (req, res, next) =>
     }
 
     const { email, _id: userId } = passportUser;
-    req.email = email; // if authorized, pass email to next handler
+
+    // if authorized, pass email and userId to next handler
+    req.email = email;
     req.userId = userId;
     return next();
   })(req, res, next);

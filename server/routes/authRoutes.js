@@ -10,7 +10,7 @@ const User = mongoose.model('User');
 const router = express.Router();
 
 router.route('/register').post(
-  middleware.validation([
+  middleware.validate([
     body('email', 'Please include a valid email').isEmail(),
     body('password', 'Please enter a password with 6 or more characters').isLength({ min: 6 }),
     body('username', 'Username is required')
@@ -21,7 +21,7 @@ router.route('/register').post(
 );
 
 router.route('/login').post(
-  middleware.validation([
+  middleware.validate([
     body('email', 'Email is required')
       .not()
       .isEmpty(),
@@ -35,7 +35,7 @@ router.route('/login').post(
 router.route('/checkToken').get(middleware.authorize, (req, res) => res.status(200).json({ authenticate: true }));
 
 router.route('/checkExistUsername').get(
-  middleware.validation([
+  middleware.validate([
     query('username')
       .not()
       .isEmpty(),
@@ -45,7 +45,7 @@ router.route('/checkExistUsername').get(
 
 router.route('/changePassword').get(
   middleware.authorize,
-  middleware.validation([
+  middleware.validate([
     body('oldPassword').custom((value, { req }) =>
       User.findById(req.userId).then(user => {
         const passwordsMatched = user.validatePassword(value);
@@ -67,7 +67,7 @@ router.route('/changePassword').get(
 );
 
 router.route('/forgotPassword').post(
-  middleware.validation([
+  middleware.validate([
     body('email', 'Please include a valid email')
       .isEmail()
       .normalizeEmail(),
@@ -76,7 +76,7 @@ router.route('/forgotPassword').post(
 );
 
 router.route('/resetPassword').post(
-  middleware.validation([
+  middleware.validate([
     body('token', 'Reset token was not provided')
       .not()
       .isEmpty(),
