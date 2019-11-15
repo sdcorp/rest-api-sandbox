@@ -26,4 +26,4 @@ $ npm run dev
 ## FAQ
 
 ### Invalid connection string
-If you got this error in the terminal, it's need to replace `DATABASE` field in `.env.development` file on your own database connection string
+If you got this error in the terminal, you need to create/replace `DATABASE` field in local `.env` file on your own database connection string

@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 
 // Switching beetween local and development(for public repo) enviroment
-require('custom-env').env('development');
+
+require('custom-env').env();
 
 // Connect to our Database and handle any bad connections
 mongoose.connect(process.env.DATABASE, {
@@ -11,7 +12,11 @@ mongoose.connect(process.env.DATABASE, {
   useUnifiedTopology: true,
 });
 mongoose.Promise = global.Promise; // Tell Mongoose to use ES6 promises
-mongoose.connection.on('error', err => console.error(`🙅  🚫   🙅  🚫   🙅  🚫   🙅  🚫   ➞ ➞ ➞  ${err.message}`));
+mongoose.connection.on('error', err =>
+  console.error(`🙅  🚫   🙅  🚫   🙅  🚫   🙅  🚫  ➞ ➞ ➞  ${err.message}`, {
+    env: JSON.stringify(process.env.NODE_ENV, null, 2),
+  })
+);
 
 // import of all our model
 require('./models/User');
