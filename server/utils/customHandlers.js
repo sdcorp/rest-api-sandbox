@@ -1,5 +1,4 @@
 const HttpError = require('http-errors');
-const nodemailer = require('nodemailer');
 
 /*
   This is a file of data and helper functions
@@ -37,25 +36,4 @@ exports.checkIfExist = async (conditions, Model, options = {}) => {
     throw err;
   }
   return found;
-};
-
-// Dump is a handy debugging function we can use to sort of "console.log" our data
-exports.dump = obj => JSON.stringify(obj, null, 2);
-
-exports.configureMailerTransporter = async () => {
-  // Generate test SMTP service account from ethereal.email
-  // Only needed if you don't have a real mail account for testing
-  const testAccount = await nodemailer.createTestAccount();
-
-  // create reusable transporter object using the default SMTP transport
-  const transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-    port: 587,
-    secure: false, // true for 465, false for other ports
-    auth: {
-      user: testAccount.user, // generated ethereal user
-      pass: testAccount.pass, // generated ethereal password
-    },
-  });
-  return transporter;
 };

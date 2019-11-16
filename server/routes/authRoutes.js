@@ -2,11 +2,11 @@ const express = require('express');
 const { body, query } = require('express-validator');
 const mongoose = require('mongoose');
 
-const { catchAsyncErrors } = require('../helpers/errorHandlers');
-const auth = require('../controllers/authController');
 const middleware = require('../middleware');
+const authController = require('../controllers/authController');
 
 const User = mongoose.model('User');
+
 const router = express.Router();
 
 router.route('/register').post(
@@ -17,7 +17,7 @@ router.route('/register').post(
       .not()
       .isEmpty(),
   ]),
-  catchAsyncErrors(auth.register)
+  middleware.catchAsyncErrors(authController.register)
 );
 
 router.route('/login').post(
@@ -29,7 +29,7 @@ router.route('/login').post(
       .not()
       .isEmpty(),
   ]),
-  auth.login
+  authController.login
 );
 
 router.route('/checkToken').get(middleware.authorize, (req, res) => res.status(200).json({ authenticate: true }));
@@ -40,7 +40,7 @@ router.route('/checkExistUsername').get(
       .not()
       .isEmpty(),
   ]),
-  catchAsyncErrors(auth.checkExistUsername)
+  middleware.catchAsyncErrors(authController.checkExistUsername)
 );
 
 router.route('/changePassword').get(
@@ -63,7 +63,7 @@ router.route('/changePassword').get(
       return true;
     }),
   ]),
-  auth.changePassword
+  authController.changePassword
 );
 
 router.route('/forgotPassword').post(
@@ -72,7 +72,7 @@ router.route('/forgotPassword').post(
       .isEmail()
       .normalizeEmail(),
   ]),
-  auth.forgotPassword
+  authController.forgotPassword
 );
 
 router.route('/resetPassword').post(
@@ -89,7 +89,7 @@ router.route('/resetPassword').post(
       return true;
     }),
   ]),
-  auth.resetPassword
+  authController.resetPassword
 );
 
 module.exports = router;

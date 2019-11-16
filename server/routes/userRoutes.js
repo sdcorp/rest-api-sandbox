@@ -1,16 +1,15 @@
 const express = require('express');
 
-const { catchAsyncErrors } = require('../helpers/errorHandlers');
 const middleware = require('../middleware');
-const { getProfile, editProfile, deleteProfile } = require('../controllers/userController');
+const userController = require('../controllers/userController');
 
 const router = express.Router();
 
 router
   .route('/profile')
   .all(middleware.authorize)
-  .get(catchAsyncErrors(getProfile))
-  .put(catchAsyncErrors(editProfile))
-  .delete(catchAsyncErrors(deleteProfile));
+  .get(middleware.catchAsyncErrors(userController.getProfile))
+  .put(middleware.catchAsyncErrors(userController.editProfile))
+  .delete(middleware.catchAsyncErrors(userController.deleteProfile));
 
 module.exports = router;

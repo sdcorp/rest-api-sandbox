@@ -3,8 +3,12 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const swaggerUi = require('swagger-ui-express');
 const cors = require('cors');
+const logger = require('morgan')('dev');
+
+const middleware = require('./middleware');
 const swaggerDocument = require('./swagger.json');
-const errorHandlers = require('./helpers/errorHandlers');
+
+// API Routes
 const postRoutes = require('./routes/postRoutes');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -14,12 +18,12 @@ const app = express();
 
 app.use(cors());
 
-// Passport Config
-require('./middleware/passportLocal')(passport);
-require('./middleware/passportJwt')(passport);
+// Passport Middlewares
+middleware.passportJwt(passport);
+middleware.passportLocal(passport);
 
 // Added logging
-app.use(require('morgan')('dev'));
+app.use(logger);
 
 // Takes the raw requests and turns them into usable properties on req.body
 app.use(bodyParser.json());
@@ -37,20 +41,20 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/posts', postRoutes);
 app.use('/api/v1/user', userRoutes);
 
-// If that above routes didnt work, we 404 them and forward to error handler
-app.use(errorHandlers.notFound);
+// If that above routes didn't work, we get 404 and forward to error handler
+app.use(middleware.notFound);
 
 // Some of DB errors
-app.use(errorHandlers.dbValidationErrors);
+app.use(middleware.dbValidationErrors);
 
 // Otherwise this was a really bad error we didn't expect! Shoot eh
 if (app.get('env') === 'development') {
   /* Development Error Handler - Prints stack trace */
-  app.use(errorHandlers.developmentErrors);
+  app.use(middleware.developmentErrors);
 }
 
 // production error handler
-app.use(errorHandlers.productionErrors);
+app.use(middleware.productionErrors);
 
 // done! we export it so we can start the site in start.js
 module.exports = app;

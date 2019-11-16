@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const HttpError = require('http-errors');
 
-const { acceptOnlyJson } = require('../helpers/customHandlers');
+const { acceptOnlyJson } = require('../utils/customHandlers');
 
 const User = mongoose.model('User');
 

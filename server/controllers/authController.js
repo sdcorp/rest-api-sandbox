@@ -4,7 +4,8 @@ const HttpError = require('http-errors');
 const { randomBytes } = require('crypto');
 const { promisify } = require('util');
 
-const { acceptOnlyJson, configureMailerTransporter } = require('../helpers/customHandlers');
+const { acceptOnlyJson } = require('../utils/customHandlers');
+const { configureMailerTransporter } = require('../services/MailService');
 
 const randomBytesAsync = promisify(randomBytes);
 const User = mongoose.model('User');

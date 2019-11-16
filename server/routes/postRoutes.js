@@ -1,21 +1,14 @@
 const express = require('express');
 const { param, body } = require('express-validator');
 
-const { catchAsyncErrors } = require('../helpers/errorHandlers');
-const {
-  getPosts,
-  createPost,
-  getSinglePost,
-  editSinglePost,
-  deleteSinglePost,
-} = require('../controllers/postController');
 const middleware = require('../middleware');
+const postController = require('../controllers/postController');
 
 const router = express.Router();
 
 router
   .route('/')
-  .get(catchAsyncErrors(getPosts))
+  .get(middleware.catchAsyncErrors(postController.getPosts))
   .post(
     middleware.validate([
       body('title', 'Title is required')
@@ -26,20 +19,23 @@ router
         .isEmpty(),
     ]),
     middleware.authorize,
-    catchAsyncErrors(createPost)
+    middleware.catchAsyncErrors(postController.createPost)
   );
 
 router
   .route('/post/:id')
-  .get(middleware.validate([param('id', 'Invalid id parameter').isMongoId()]), catchAsyncErrors(getSinglePost))
+  .get(
+    middleware.validate([param('id', 'Invalid id parameter').isMongoId()]),
+    middleware.catchAsyncErrors(postController.getSinglePost)
+  )
   .put(
     middleware.validate([param('id', 'Invalid id parameter').isMongoId()]),
     middleware.authorize,
-    catchAsyncErrors(editSinglePost)
+    middleware.catchAsyncErrors(postController.editSinglePost)
   )
   .delete(
     middleware.validate([param('id', 'Invalid id parameter').isMongoId()]),
     middleware.authorize,
-    catchAsyncErrors(deleteSinglePost)
+    middleware.catchAsyncErrors(postController.deleteSinglePost)
   );
 module.exports = router;
