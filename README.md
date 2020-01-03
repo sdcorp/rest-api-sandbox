@@ -27,3 +27,8 @@ $ npm run dev
 
 ### Invalid connection string
 If you got this error in the terminal, you need to create/replace `DATABASE` field in local `.env` file on your own database connection string
+
+### TODO
+
+ - [ ] Pagination
+ - [ ] Basic socket implementation
